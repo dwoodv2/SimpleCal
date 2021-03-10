@@ -35,8 +35,10 @@ class Calendar(GridLayout):
         calendarRow=np.array(calendarRow)
         calLayout=calendarRow.reshape(5,7)
         print(calLayout)
-        
-            
+        for row in calLayout:
+            for label in row:
+                calElem=Button(text=label)
+                calElem.bind(on_press=self.on_button_press)
 class MyApp(App):
     def build(self):
         return Calendar()
