@@ -22,8 +22,12 @@ class MyApp(App):
         main_layout = BoxLayout(orientation="vertical")
         self.date = Label(text="Current Date : {0}".format(str(currentTime.strftime("%A %d %B %Y"))))
         self.selectedMonth = Label(text="{0} {1}".format(month,year))
+        self.leftButton=Button(text="<",size_hint=(.1,.1),pos_hint={'x':.2,'y':.2})
+        self.rightButton=Button(text=">",size_hint=(.1,.1),pos_hint={'x':.2,'y':.3})
         main_layout.add_widget(self.date)
         main_layout.add_widget(self.selectedMonth)
+        main_layout.add_widget(self.leftButton)
+        main_layout.add_widget(self.rightButton)
         def createYear(Y, M):
             firstDay = datetime.datetime(Y, M, 1)
             print(firstDay.strftime("%Y %b %w"))
@@ -77,8 +81,6 @@ class MyApp(App):
     def on_elem_press(self, instance):
         daySelected=instance.text
         print(daySelected)
-
-
 if __name__ == "__main__":
     app = MyApp()
     app.run()
