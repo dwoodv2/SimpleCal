@@ -7,28 +7,36 @@ from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 
-global calLayout, row,calElem
+global calLayout, row, calElem, year, month
 from calendar import monthrange
 
 currentTime = datetime.datetime.now()
 curYear = currentTime.year
 curMonth = currentTime.month
+year = int(currentTime.strftime("%Y"))
+month = int(currentTime.strftime("%m"))
+
+
 class MyApp(App):
     def build(self):
-        year=str(currentTime.strftime("%Y"))
-        month=str(currentTime.strftime("%B"))
-        global calendarRow, calLayout
+        global calendarRow
         calendarRow = []
-        main_layout = BoxLayout(orientation="vertical")
-        self.date = Label(text="Current Date : {0}".format(str(currentTime.strftime("%A %d %B %Y"))))
-        self.selectedMonth = Label(text="{0} {1}".format(month,year))
-        self.leftButton=Button(text="<",size_hint=(.1,.1),pos_hint={'x':.2,'y':.2})
-        self.rightButton=Button(text=">",size_hint=(.1,.1),pos_hint={'x':.2,'y':.3})
+        main_layout = BoxLayout(orientation="vertical", spacing=5)
+        self.date = Label(text="Current Date : {0}".format(str(currentTime.strftime("%A %d %B %Y")), font_size='20sp'))
+        self.selectedMonth = Label(text="{0} {1}".format(month, year), font_size='20sp')
+        button_layout = BoxLayout(orientation="horizontal")
+        self.leftButton = Button(text="<", size_hint=(.2, .25), pos_hint={'x': .2, 'y': .2})
+        self.rightButton = Button(text=">", size_hint=(.2, .25), pos_hint={'x': .3, 'y': .2})
         main_layout.add_widget(self.date)
         main_layout.add_widget(self.selectedMonth)
-        main_layout.add_widget(self.leftButton)
-        main_layout.add_widget(self.rightButton)
-        def createYear(Y, M):
+        self.leftButton.bind(on_press=self.left_button_pressed)
+        button_layout.add_widget(self.leftButton)
+        button_layout.add_widget(self.rightButton)
+        main_layout.add_widget(button_layout)
+
+        def createMonth(Y, M):
+            global calLayout
+            calendarRow = []
             firstDay = datetime.datetime(Y, M, 1)
             print(firstDay.strftime("%Y %b %w"))
             print(monthrange(Y, M)[1])
@@ -43,11 +51,11 @@ class MyApp(App):
             if len(calendarRow) < 35:
                 for i in range(35 - len(calendarRow)):
                     calendarRow.append("")
-            print(calendarRow)
-        createYear(curYear, curMonth)  # 1st time opening program it will get the current date
-        calendarRow = np.array(calendarRow)
-        calLayout = calendarRow.reshape(5, 7)
-        print(calLayout)
+            calendarRow = np.array(calendarRow)
+            calLayout = calendarRow.reshape(5, 7)
+            print(calLayout)
+            return calLayout
+        createMonth(curYear, curMonth)  # 1st time opening program it will get the current
         calGrid = GridLayout(rows=6, cols=7)
         mLabel = Label(text="[i]Mon[/i]", markup=True)
         tLabel = Label(text="[i]Tue[/i]", markup=True)
@@ -65,8 +73,9 @@ class MyApp(App):
         calGrid.add_widget(suLabel)
         for row in calLayout:
             for label in row:
-                if label == str(currentTime.strftime("%d")) and year==str(currentTime.strftime("%Y")) and month ==str(currentTime.strftime("%B")):
-                    self.calElem = Button(text="[b][color=fc0303]{0}[/color][/b]".format(label),markup=True)
+                if label == str(currentTime.strftime("%d")) and year == str(
+                        currentTime.strftime("%Y")) and month == str(currentTime.strftime("%B")):
+                    self.calElem = Button(text="[b][color=fc0303]{0}[/color][/b]".format(label), markup=True)
                     self.calElem.bind(on_press=self.on_elem_press)
                     calGrid.add_widget(self.calElem)
                     print("Today!")
@@ -78,9 +87,16 @@ class MyApp(App):
                     print(self.calElem.text)
         main_layout.add_widget(calGrid)
         return main_layout  # Return after all widgets are added
+    def updateMonth(year,month):
+        createMonth(year,month)
+        for row in calLayout:
+            print("Test")
     def on_elem_press(self, instance):
-        daySelected=instance.text
+        daySelected = instance.text
         print(daySelected)
+    def left_button_pressed(self, instance):
+        print("lEFT")
+        -
 if __name__ == "__main__":
     app = MyApp()
     app.run()
